@@ -1,0 +1,55 @@
+/*
+    vector<string> names = {
+        {"Carlos Menin"},
+        {"Eduardo Bolson"},
+        {"Heloisa Marques"},
+        {"Luis Mendes"},
+        {"Vinicius Alves"},
+        {"Vini Alves"},
+        {"Vinicius Boff"}
+    };
+    vector<string> ret;
+
+    string name;
+    int count = 0;
+
+    for (vector<string>::iterator it = names.begin(); it != names.end(); it ++){
+        name = *it;
+        count ++;
+        tree.insert(name, new tst::Data(count, count*2, 1.5));
+    }
+
+    ret = tree.search_by_radix("Vini");
+    for (vector<string>::iterator it = ret.begin(); it != ret.end(); it ++){
+        cout << *it << endl;
+    }*/
+
+
+
+
+
+
+
+
+
+
+    void operator>> (ofstream &file) {
+        file << setw(55) << setfill('_') << right << ' ' << endl;
+        file << '|' << setw(10) << setfill(' ') << right << "Chave" << '|' << 
+            setw(10) << setfill(' ') << right << "Dados" << '|' << 
+            setw(30) << setfill(' ') << right << "Nome" << '|' << endl;
+        file << '+' << setw(11) << setfill('-') << right << '+' << 
+            setw(11) << setfill('-') << right << '+' <<
+            setw(31) << setfill('-') << right << '+' << endl;
+        for (vector<vector<Node>>::iterator it1 = table.begin(); it1 !=  table.end(); it1 ++){
+            vector<Node> list = *it1;
+            if (list.size() != 0){
+                for (vector<Node>::iterator it2 = list.begin(); it2 != list.end(); it2 ++){
+                    file << '|' << 
+                        setw(10) << setfill('.') << right << it2->key << '|' << 
+                        setw(10) << setfill('.') << right << it2->data.data << '|' << 
+                        setw(30) << setfill('.') << right << it2->tag << '|' << endl;
+                }
+            }
+        }
+    }

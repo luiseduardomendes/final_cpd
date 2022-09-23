@@ -1,0 +1,61 @@
+# depslib dependency file v1.0
+1663700555 source:e:\github\cpd-ufrgs-22-1\trabalho_final\hash_table.cpp
+	"hash_table.hpp"
+	"parser.hpp"
+
+1663699215 e:\github\cpd-ufrgs-22-1\trabalho_final\hash_table.hpp
+	<iostream>
+	<iomanip>
+	<ios>
+	<fstream>
+	<vector>
+	<string>
+	<cmath>
+	<ctime>
+	<stdint.h>
+
+1662081103 e:\github\cpd-ufrgs-22-1\trabalho_final\parser.hpp
+	<fstream>
+	<memory>
+	<stdexcept>
+	<string>
+	<vector>
+
+1663900740 source:e:\github\cpd-ufrgs-22-1\trabalho_final\main.cpp
+	<iostream>
+	<vector>
+	<fstream>
+	<regex>
+	<string>
+	<ctime>
+	<windows.h>
+	"ternary_search_tree.hpp"
+	"hash_table.hpp"
+	"tag_table.hpp"
+
+1663358820 e:\github\cpd-ufrgs-22-1\trabalho_final\ternary_search_tree.hpp
+	<string>
+	<vector>
+	<iostream>
+	<fstream>
+
+1663699209 e:\github\cpd-ufrgs-22-1\trabalho_final\tag_table.hpp
+	<vector>
+	<iostream>
+	<fstream>
+	<string>
+	"hash_table.hpp"
+
+1663700152 source:e:\github\cpd-ufrgs-22-1\trabalho_final\tag_table.cpp
+	"tag_table.hpp"
+	"parser.hpp"
+	<sstream>
+	"hash_table.hpp"
+
+1663696241 source:e:\github\cpd-ufrgs-22-1\trabalho_final\ternary_search_tree.cpp
+	"ternary_search_tree.hpp"
+	"parser.hpp"
+
+1514140574 source:e:\github\cpd-ufrgs-22-1\trabalho_final\cpd\main.cpp
+	<iostream>
+
