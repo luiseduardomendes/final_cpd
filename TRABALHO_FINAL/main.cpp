@@ -4,17 +4,18 @@
 #include <regex>
 #include <string>
 #include <ctime>
-#include <windows.h>
+//#include <windows.h>
 #include "ternary_search_tree.hpp"
 #include "hash_table.hpp"
 #include "tag_table.hpp"
+#include "position_table.hpp"
 
 using namespace std;
 
-LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
+//LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
 
 void coutVector(std::vector<std::string> vec);
-
+/*
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow){
 
     WNDCLASSW wc = {0};
@@ -50,8 +51,8 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp){
         break;
     }
 }
+*/
 
-/*
 int main(int argv, char **argc){
     tst::Tree tree;
     clock_t start, end;
@@ -82,7 +83,8 @@ int main(int argv, char **argc){
 
     std::cout << "loading time: " << double(end-start) / CLOCKS_PER_SEC << std::endl;
 
-
+    getc(stdin);
+    
     std::string user_input;
     while (user_input != "exit"){
         system("clear");
@@ -90,6 +92,7 @@ int main(int argv, char **argc){
         std::regex player_reg ("player ([^.]+)");
         std::regex user_reg ("user ([^.]+)");
         std::regex tags_reg ("tags ([^.]+)");
+        std::regex top10_reg ("top([0-9]+) '([^.]+)'");
         std::regex help_reg ("help([^.]?)");
         if (std::regex_search(user_input, matches, player_reg)){
             std::vector<int> ids;
@@ -121,7 +124,7 @@ int main(int argv, char **argc){
         else if (std::regex_search(user_input, matches, tags_reg)){
             std::vector<std::vector<int>> search_result;
             std::string str =  matches.str(1);
-	    std::regex tags_split ("\'([^\'\"]+)\'");
+	        std::regex tags_split ("\'([^\'\"]+)\'");
             std::sregex_iterator it (str.begin(), str.end(), tags_split);
             std::sregex_iterator lastMatch;
             while (it != lastMatch){
@@ -134,6 +137,20 @@ int main(int argv, char **argc){
             }
             tag_table.displayIntersection(search_result, std::cout, &table);
 
+        }
+        else if (std::regex_search(user_input, matches, top10_reg)){
+            int p = matches.str().find(' ');
+            int n = atoi(matches.str().substr(3, p).c_str());
+            string pos =  matches.str().substr(p+2);
+            pos.pop_back();
+
+            vector<int> v = table.searchTop(n, pos);
+            std::cout << "\t" << std::setw(50) << std::right << "Nome" << '|' << setw(25) << std::right << "Posicoes" << '|' << std::setw(10) << std::right << "pontuacao" << '|' << std::endl;
+            for (int id = 0; id < v.size(); id ++){
+                cout << id + 1 << "\t";
+                *(table.search(v[id]).data) >> std::cout;
+                std::cout << endl;
+            }
         }
         else if (std::regex_search(user_input, matches, help_reg)){
             std::cout << "player player_name" << std::endl;
@@ -161,4 +178,6 @@ void coutVector(std::vector<std::string> vec){
         i ++;
     }
 }
-*/
+
+
+

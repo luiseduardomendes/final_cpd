@@ -8,6 +8,7 @@
 #include <cmath>
 #include <ctime>
 #include <stdint.h>
+#include "position_table.hpp"
 
 using namespace std;
 
@@ -81,6 +82,7 @@ namespace ht{
         int hash(int sofifa_id);
         usr::UserTable *usrTable;
     public:
+        pos::PositionTable *posTable;
         int size;
         HashTable(int size);
         void read_csv(std::ifstream &input);
@@ -90,5 +92,10 @@ namespace ht{
         Node search(int sofifa_id);
         void displayUserRatings(int userId, std::ostream& file);
         void operator>>(std::ostream &file);
+        int partition(vector<int> &v, int begin, int end);
+        void sort(vector<int> &v);
+        void quicksort(vector<int> &v, int begin, int end);
+        void selectionSort(vector<int> &v, int n);
+        vector<int> searchTop(int N, std::string pos);
     };
 }
