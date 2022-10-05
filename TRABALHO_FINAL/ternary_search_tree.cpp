@@ -108,29 +108,28 @@ bool isInVector(std::vector<tst::Node*> v, tst::Node* node){
     return false;
 }
 
-void tst::Tree::find_words_by_radix(Node *node, std::string current_word, std::vector<tst::Node*> *visited, std::vector<std::string> *word_list, std::vector<int> *ids){
+void tst::Tree::find_words_by_radix(Node *node, std::string current_word, std::vector<tst::Node*> *visited, std::vector<int> *ids){
     
     visited->push_back(node);
     current_word.push_back(node->key);
     
-    if (word_list->size() >= 20)
+    if (ids->size() >= 20)
         return;
  
     if (node->data != NULL) {
-        word_list->push_back(current_word);
         ids->push_back(node->data->sofifa_id);
     }
     
     for (std::vector<Node*>::iterator it = node->next.begin(); it != node->next.end(); it ++)
         if (*it != NULL && !isInVector(*visited, *it))
-            find_words_by_radix(*it, current_word, visited, word_list, ids);
+            find_words_by_radix(*it, current_word, visited, ids);
         
     
 }
 
-std::vector<std::string> tst::Tree::search_by_radix(std::string radix, std::vector<int> *sofifa_ids) {
-    std::vector<std::string> *wl = new std::vector<std::string>; 
-    std::vector<std::string> word_list = *wl;
+std::vector<int> tst::Tree::search_by_radix(std::string radix) {
+    std::vector<int> *id_list = new std::vector<int>; 
+    std::vector<int> ids = *id_list;
 
     std::string current_word = "";
     std::vector<tst::Node*> visited;
@@ -142,12 +141,12 @@ std::vector<std::string> tst::Tree::search_by_radix(std::string radix, std::vect
  
         current_word.push_back(ch); 
         if (node->next[to_int(ch)] == NULL)
-            return word_list;
+            return ids;
 
         node = node->next[to_int(ch)];
     }
     current_word.pop_back();
-    find_words_by_radix(node, current_word, &visited, wl, sofifa_ids);
-    return *wl;
+    find_words_by_radix(node, current_word, &visited, id_list);
+    return *id_list;
 
 }

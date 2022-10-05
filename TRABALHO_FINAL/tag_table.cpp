@@ -136,8 +136,6 @@ std::vector<int> Table::intersection(std::vector<std::vector<int>> tag_vect){
         }
         if (found){
             id_vect.push_back(aux_id);
-            if (id_vect.size() >= 20)
-                break;
         }
     }
     return id_vect;
@@ -159,10 +157,13 @@ void Table::operator>>(std::ostream &file){
 void Table::displayIntersection(std::vector<std::vector<int>> intersec, std::ostream &file, ht::HashTable *hashT){
     int a = 1;
     std::vector<int> inter = intersection(intersec);
+    hashT->selectionSort(inter, 20, 0);
     file << "\t" << std::setw(50) << std::right << "Nome" << '|' << setw(25) << std::right << "Posicoes" << '|' << std::setw(10) << std::right << "pontuacao" << '|' << std::endl;
     for (int i : inter){
         std::cout << a++ << ".\t";
         *(hashT->search(i).data) >> std::cout;
         std::cout << std::endl;
+        if (a > 20)
+            break;
     }  
 }

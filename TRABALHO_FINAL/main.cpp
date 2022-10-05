@@ -1,57 +1,18 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <regex>
 #include <string>
 #include <ctime>
-//#include <windows.h>
 #include "ternary_search_tree.hpp"
 #include "hash_table.hpp"
 #include "tag_table.hpp"
 #include "position_table.hpp"
 
 using namespace std;
-
-//LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
-
+bool startsWith(std::string str, std::string prefix);
 void coutVector(std::vector<std::string> vec);
-/*
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow){
-
-    WNDCLASSW wc = {0};
-
-    wc.hbrBackground = (HBRUSH) COLOR_WINDOW;
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hInstance = hInst;
-    wc.lpszClassName = L"MyWindowClass";
-    wc.lpfnWndProc = WindowProcedure;
-
-    if (!RegisterClassW(&wc))
-        return -1;
-
-    CreateWindowW(L"MyWindowClass", L"My Window", WS_OVERLAPPED | WS_VISIBLE, 100, 100, 640, 480, NULL, NULL, NULL, NULL);
-
-    MSG msg = {0};
-
-    while(GetMessage(&msg, NULL, NULL, NULL)){
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-
-    return 0;
-}
-
-LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp){
-    switch (msg){
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-    default:
-        DefWindowProcW(hWnd, msg, wp, lp);
-        break;
-    }
-}
-*/
+std::vector<std::string> split_str(std::string str, char sep);
+std::vector<std::string> split_tag(std::string str);
 
 int main(int argv, char **argc){
     tst::Tree tree;
@@ -88,17 +49,22 @@ int main(int argv, char **argc){
     std::string user_input;
     while (user_input != "exit"){
         system("clear");
-        std::smatch matches;
-        std::regex player_reg ("player ([^.]+)");
-        std::regex user_reg ("user ([^.]+)");
-        std::regex tags_reg ("tags ([^.]+)");
-        std::regex top10_reg ("top([0-9]+) '([^.]+)'");
-        std::regex help_reg ("help([^.]?)");
-        if (std::regex_search(user_input, matches, player_reg)){
-            std::vector<int> ids;
-            std::vector<std::string> temp = tree.search_by_radix(matches.str(1), &ids);
+        
+        auto start = user_input.find(' ');
+        std::string cmd = user_input;
+        std::string arg = "";
+        std::vector<std::string> data;
 
-            if (temp.size() > 1){
+        if (start != std::string::npos){
+            cmd = user_input.substr(0, start);
+            arg = user_input.substr(start+1);
+            data = split_tag(arg);
+        }
+
+        if (cmd == "player"){
+            std::vector<int> ids = tree.search_by_radix(arg);
+
+            if (ids.size() > 1){
                 std::cout << std::endl << "First 20 search results:" << std::endl;
                 std::cout << "\t" << std::setw(50) << std::right << "Nome" << '|' << setw(25) << std::right << "Posicoes" << '|' << std::setw(10) << std::right << "pontuacao" << '|' << std::endl;
                 int a = 1;
@@ -106,9 +72,11 @@ int main(int argv, char **argc){
                     std::cout << a++ << ".\t";
                     *(table.search(id).data) >> std::cout;
                     std::cout << std::endl;
+                    if (a >= 20)
+                        break;
                 }
             }
-            else if (temp.size() == 1){
+            else if (ids.size() == 1){
                 int id = ids[0];
                 ht::Node node = table.search(id);
                 std::cout << std::setw(50) << std::right << "Nome" << '|' << setw(25) << std::right << "Posicoes" << '|' << std::setw(10) << std::right << "pontuacao" << '|' << std::endl;
@@ -118,33 +86,32 @@ int main(int argv, char **argc){
                 std::cout << "There's no result to your search!" << std::endl;
             }
         }
-        else if (std::regex_search(user_input, matches, user_reg)){
-            table.displayUserRatings(atoi(matches.str(1).c_str()), std::cout);
+        
+        else if (cmd == "user"){
+            table.displayUserRatings(atoi(arg.c_str()), std::cout);
         }
-        else if (std::regex_search(user_input, matches, tags_reg)){
+        
+        else if (cmd == "tags"){
             std::vector<std::vector<int>> search_result;
-            std::string str =  matches.str(1);
-	        std::regex tags_split ("\'([^\'\"]+)\'");
-            std::sregex_iterator it (str.begin(), str.end(), tags_split);
-            std::sregex_iterator lastMatch;
-            while (it != lastMatch){
+            std::vector<std::string>::iterator it = data.begin();
+            while (it != data.end()){
                 tagTable::Node* node;
-                if ((node = tag_table[it->str(1)]) != NULL)
+                if ((node = tag_table[*it]) != NULL)
                     search_result.push_back(node->data.ids);
                 else
-                    std::cout << it->str(1) << " tag no found" << std::endl;
+                    std::cout << *it << " tag no found" << std::endl;
                 it ++;
             }
-            tag_table.displayIntersection(search_result, std::cout, &table);
+            if (search_result.size() >= 1)
+                tag_table.displayIntersection(search_result, std::cout, &table);
 
         }
-        else if (std::regex_search(user_input, matches, top10_reg)){
-            int p = matches.str().find(' ');
-            int n = atoi(matches.str().substr(3, p).c_str());
-            string pos =  matches.str().substr(p+2);
-            pos.pop_back();
+        else if (startsWith(cmd, "top")){
+            std::vector<std::string>::iterator it = data.begin();
+            int n = atoi(cmd.substr(3).c_str());
 
-            vector<int> v = table.searchTop(n, pos);
+            vector<int> v = table.searchTop(n, *it);
+
             std::cout << "\t" << std::setw(50) << std::right << "Nome" << '|' << setw(25) << std::right << "Posicoes" << '|' << std::setw(10) << std::right << "pontuacao" << '|' << std::endl;
             for (int id = 0; id < v.size(); id ++){
                 cout << id + 1 << "\t";
@@ -152,11 +119,33 @@ int main(int argv, char **argc){
                 std::cout << endl;
             }
         }
-        else if (std::regex_search(user_input, matches, help_reg)){
+
+        else if (cmd == "roleTag"){
+            std::vector<std::vector<int>> search_result;
+            std::vector<std::string>::iterator it = data.begin();
+            
+            search_result.push_back(table.posTable->search(*it).data->sofifaIds);
+            it ++;
+            
+            while (it != data.end()){
+                tagTable::Node* node;
+                if ((node = tag_table[*it]) != NULL)
+                    search_result.push_back(node->data.ids);
+                else
+                    std::cout << *it << " tag no found" << std::endl;
+                it ++;
+            }
+            if (search_result.size() >= 1)
+                tag_table.displayIntersection(search_result, std::cout, &table);
+
+        }
+
+        else if (cmd == "help"){
             std::cout << "player player_name" << std::endl;
             std::cout << "user user_id" << std::endl;
             std::cout << "tags 'tag1' 'tag2' 'tag3' ... 'tagn'" << std::endl;
             std::cout << "top10 'pos'" << std::endl;
+            std::cout << "roleTag 'pos' 'tag1' 'tag2' 'tag3' ... 'tagn'" << std::endl;
             std::cout << "exit" << std::endl;
         }
         std::cout << std::endl << std::endl << "[pressione ENTER para continuar]" << std::endl;
@@ -179,5 +168,38 @@ void coutVector(std::vector<std::string> vec){
     }
 }
 
+std::vector<std::string> split_str(std::string str, char sep){
+    size_t start = 0, end = 0;
+    std::vector<std::string> tokens;
 
+    while ((end = str.find(sep, start)) != string::npos){
+        tokens.push_back(str.substr(start, end - start));
+        start = end + 1;
+    }
+    tokens.push_back(str.substr(start));
+    return tokens;
+}
 
+std::vector<std::string> split_tag(std::string str){
+    size_t start = 0, end = 0;
+    std::vector<std::string> tokens;
+    std::string temp;
+
+    while ((end = str.find('\'', start)) != string::npos){
+        temp = str.substr(start, end - start);
+        if (temp != " " && temp != "")
+            tokens.push_back(temp);
+        start = end + 1;
+    }
+    temp = str.substr(start);
+    if (temp != " " && temp != "")
+        tokens.push_back(temp);
+    return tokens;
+}
+
+bool startsWith(std::string str, std::string prefix){
+    int i = 0;
+    if (str.size() < prefix.size()) return false;
+    while(str[i] == prefix[i] && i < prefix.size()) i ++;
+    if (i == prefix.size()) return true; else return false;
+}

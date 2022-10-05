@@ -36,8 +36,8 @@ namespace tst{
 
             void read_csv(std::ifstream &input);
             void operator>>(std::ofstream output);
-            std::vector<std::string> search_by_radix(std::string, std::vector<int> *sofifa_ids);
-            void find_words_by_radix(Node *node, std::string current_word, std::vector<tst::Node*> *visited, std::vector<std::string> *word_list, std::vector<int> *ids);
+            std::vector<int> search_by_radix(std::string);
+            void find_words_by_radix(Node *node, std::string current_word, std::vector<tst::Node*> *visited, std::vector<int> *ids);
 
     };
 }

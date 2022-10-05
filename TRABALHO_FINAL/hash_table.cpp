@@ -333,18 +333,21 @@ int ht::HashTable::partition(vector<int> &v, int begin, int end){
     return partition;
 }
 
-void ht::HashTable::selectionSort(vector<int> &v, int n){
-    for (int i = 0; i < n; i ++){
+void ht::HashTable::selectionSort(vector<int> &v, int n, int min_ratings){
+    for (int i = 0; i < v.size(); i ++){
         float max = 0;
         int max_id = 0;
+        if (i == n)
+            return;
         for (int j = i ; j < v.size(); j ++){
             if (search(v[j]).data->rating > max){
-                if (search(v[j]).data->count >= 1000){
+                if (search(v[j]).data->count >= min_ratings){
                     max = search(v[j]).data->rating;
                     max_id = j;
                 }
             }
         }
+        
         int temp = v[max_id];
         v[max_id] = v[i];
         v[i] = temp;
@@ -352,7 +355,12 @@ void ht::HashTable::selectionSort(vector<int> &v, int n){
 }
 
 vector<int> ht::HashTable::searchTop(int n, std::string pos){
-    std::vector<int> v = this->posTable->search(pos).data->sofifaIds;
-    selectionSort(v, n);
-    return std::vector<int>(&v[0],&v[n]);
+    std::vector<int> v;
+    pos::Data *data;
+    if ((data = this->posTable->search(pos).data) != NULL){
+        v = data->sofifaIds;
+        selectionSort(v, n, 1000);
+        return std::vector<int>(&v[0],&v[n]);
+    }
+    return v;
 }

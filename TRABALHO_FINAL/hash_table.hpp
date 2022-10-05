@@ -95,7 +95,7 @@ namespace ht{
         int partition(vector<int> &v, int begin, int end);
         void sort(vector<int> &v);
         void quicksort(vector<int> &v, int begin, int end);
-        void selectionSort(vector<int> &v, int n);
+        void selectionSort(vector<int> &v, int n, int min_rating);
         vector<int> searchTop(int N, std::string pos);
     };
 }
